@@ -1,0 +1,28 @@
+---
+galaxy_info:
+  role_name: opservo_agent
+  namespace: opservo
+  author: Opservo (Softuvo Solutions Pvt Ltd)
+  description: >-
+    Install the Opservo server-monitoring agent with the official installer,
+    enrolled with a fleet key. Idempotent; read-only agent by default.
+  company: Softuvo Solutions Pvt Ltd
+  license: MIT
+  min_ansible_version: "2.14"
+  platforms:
+    - name: Ubuntu
+      versions: [focal, jammy, noble]
+    - name: Debian
+      versions: [bullseye, bookworm]
+    - name: EL
+      versions: ["8", "9"]
+    - name: Amazon
+      versions: [all]
+  galaxy_tags:
+    - monitoring
+    - observability
+    - linux
+    - agent
+    - opservo
+    - alerting
+dependencies: []

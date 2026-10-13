@@ -1,0 +1,76 @@
+---
+- name: Check whether the Opservo agent is already installed
+  become: true # /etc/infrapilot is root-only
+  ansible.builtin.stat:
+    path: /etc/infrapilot/config
+  register: opservo_agent_config
+
+- name: Decide whether the installer needs to run
+  ansible.builtin.set_fact:
+    opservo_agent_needs_install: >-
+      {{ (not opservo_agent_config.stat.exists)
+         or (opservo_agent_force_reinstall | bool)
+         or (opservo_agent_force_reregister | bool) }}
+
+- name: Require an enrollment key for a new install
+  ansible.builtin.assert:
+    that:
+      - opservo_agent_enroll_key | length > 0
+    fail_msg: >-
+      Set opservo_agent_enroll_key to a fleet key (fleet_…) from the Opservo dashboard
+      (Add server → Auto Scaling / golden AMI). Keep it in Ansible Vault.
+    quiet: true
+  when: opservo_agent_needs_install | bool and not opservo_agent_config.stat.exists
+
+- name: Require an https API URL
+  ansible.builtin.assert:
+    that:
+      - opservo_agent_api_url is match('^https://') or opservo_agent_api_url is match('^http://(localhost|127\.0\.0\.1)')
+    fail_msg: "opservo_agent_api_url must be https:// — the agent's secret key would otherwise travel in plaintext."
+    quiet: true
+
+- name: Install the Opservo agent
+  when: opservo_agent_needs_install | bool
+  become: true
+  block:
+    - name: Create a private temp directory for the installer
+      ansible.builtin.tempfile:
+        state: directory
+        suffix: opservo
+      register: opservo_agent_tmp
+
+    - name: Download the official installer
+      ansible.builtin.get_url:
+        url: "{{ opservo_agent_installer_url }}"
+        dest: "{{ opservo_agent_tmp.path }}/install.sh"
+        mode: "0700"
+      register: opservo_agent_installer
+      retries: 3
+      delay: 5
+      until: opservo_agent_installer is succeeded
+
+    - name: Run the installer (verifies the signed agent binary, writes config, starts the service)
+      ansible.builtin.command:
+        cmd: "bash {{ opservo_agent_tmp.path }}/install.sh"
+      environment: "{{ opservo_agent_install_env | combine(opservo_agent_env_base) }}"
+      vars:
+        opservo_agent_env_base:
+          OPSERVO_API_URL: "{{ opservo_agent_api_url }}"
+          OPSERVO_TOKEN: "{{ opservo_agent_enroll_key }}"
+          OPSERVO_FORCE: "{{ '1' if (opservo_agent_force_reregister | bool) else '0' }}"
+      no_log: true
+      changed_when: true
+
+  always:
+    - name: Remove the installer
+      ansible.builtin.file:
+        path: "{{ opservo_agent_tmp.path }}"
+        state: absent
+      when: opservo_agent_tmp.path is defined
+
+- name: Ensure the agent service is enabled and running
+  become: true
+  ansible.builtin.systemd_service:
+    name: infrapilot-agent
+    state: started
+    enabled: true

@@ -1,0 +1,23 @@
+---
+# Opservo API the agent reports to.
+opservo_agent_api_url: "https://api.getopservo.com"
+
+# Enrollment key from the dashboard. Use a FLEET key (fleet_…, Add server →
+# "Auto Scaling / golden AMI") for more than one host: it is multi-use and
+# revocable. A single-use ipk_… token only enrolls ONE host. Keep it in
+# Ansible Vault; the role never logs it (no_log).
+opservo_agent_enroll_key: ""
+
+# Where to fetch the official installer from (served by the API itself).
+opservo_agent_installer_url: "{{ opservo_agent_api_url }}/install.sh"
+
+# Re-run the installer even when the agent is already installed. The installer
+# keeps existing credentials and just upgrades the binary in place; set
+# opservo_agent_force_reregister to make it register as a NEW server instead.
+opservo_agent_force_reinstall: false
+opservo_agent_force_reregister: false
+
+# Extra installer environment (e.g. {OPSERVO_VERSION: "latest"}). See the
+# header of install.sh for the full list. Remote command execution is NOT
+# switchable here on purpose: it stays an explicit per-server opt-in.
+opservo_agent_install_env: {}

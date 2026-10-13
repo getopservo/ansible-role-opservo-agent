@@ -1,0 +1,12 @@
+---
+# ansible-playbook -i inventory.ini examples/playbook.yml --ask-vault-pass
+#
+# group_vars/all/vault.yml (encrypted with ansible-vault):
+#   vault_opservo_enroll_key: "fleet_…"
+- name: Monitor every server with Opservo
+  hosts: all
+  become: true
+  roles:
+    - role: opservo.opservo_agent
+      vars:
+        opservo_agent_enroll_key: "{{ vault_opservo_enroll_key }}"

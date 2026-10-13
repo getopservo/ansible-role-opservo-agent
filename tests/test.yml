@@ -1,0 +1,9 @@
+---
+# Syntax / lint target: ansible-playbook -i tests/inventory tests/test.yml --syntax-check
+- name: Install the Opservo agent
+  hosts: all
+  gather_facts: false
+  roles:
+    - role: opservo_agent
+      vars:
+        opservo_agent_enroll_key: "fleet_example_not_a_real_key"
