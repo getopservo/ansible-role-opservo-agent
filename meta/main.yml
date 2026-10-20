@@ -1,7 +1,7 @@
 ---
 galaxy_info:
   role_name: opservo_agent
-  namespace: opservo
+  namespace: getopservo
   author: Opservo (Softuvo Solutions Pvt Ltd)
   description: >-
     Install the Opservo server-monitoring agent with the official installer,

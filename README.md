@@ -1,4 +1,4 @@
-# Ansible role: opservo.opservo_agent
+# Ansible role: getopservo.opservo_agent
 
 Installs the [Opservo](https://getopservo.com) monitoring agent on Linux hosts
 with the **official installer** (`<API>/install.sh`), so the agent binary is
@@ -23,7 +23,7 @@ install. Hosts appear in your Opservo workspace within a minute.
 ## Install
 
 ```bash
-ansible-galaxy role install opservo.opservo_agent
+ansible-galaxy role install getopservo.opservo_agent
 ```
 
 ## Role variables
@@ -43,7 +43,7 @@ ansible-galaxy role install opservo.opservo_agent
 - hosts: all
   become: true
   roles:
-    - role: opservo.opservo_agent
+    - role: getopservo.opservo_agent
       vars:
         opservo_agent_enroll_key: "{{ vault_opservo_enroll_key }}"
 ```

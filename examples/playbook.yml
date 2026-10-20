@@ -7,6 +7,6 @@
   hosts: all
   become: true
   roles:
-    - role: opservo.opservo_agent
+    - role: getopservo.opservo_agent
       vars:
         opservo_agent_enroll_key: "{{ vault_opservo_enroll_key }}"
