@@ -5,12 +5,12 @@ with the **official installer** (`<API>/install.sh`), so the agent binary is
 verified against Opservo's Ed25519-signed manifest exactly as in a manual
 install. Hosts appear in your Opservo workspace within a minute.
 
-- **Idempotent** — skipped on hosts that already have `/etc/infrapilot/config`;
+- **Idempotent** — skipped on hosts that already have `/etc/opservo/config`;
   the service is only ensured enabled + running.
 - **Key never logged** — the installer task is `no_log: true`.
 - **Read-only agent** — remote command execution stays off. Turning it on is a
   deliberate per-server step (`OPSERVO_ENABLE_ACTIONS=true` in
-  `/etc/infrapilot/config`), not something this role toggles.
+  `/etc/opservo/config`), not something this role toggles.
 
 ## Requirements
 
